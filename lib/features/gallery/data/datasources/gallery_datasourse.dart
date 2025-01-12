@@ -18,10 +18,12 @@ class GalleryDatasourse {
       final response = await _dio.get(baseUrl, queryParameters: {'page': page});
       if (response.statusCode == 200) {
         final List data = response.data;
+        debugPrint("${response.data}");
         return data.map((item) => ImageModel.fromJson(item)).toList();
       } else {
-        throw Exception(
+        debugPrint(
             'Failed to load images. Status code: ${response.statusCode}');
+            return [];
       }
     } catch (e) {
       debugPrint("Error in fetching images: $e");
