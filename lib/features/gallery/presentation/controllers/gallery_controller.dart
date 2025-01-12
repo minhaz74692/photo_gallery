@@ -15,10 +15,10 @@ class GalleryController extends StateNotifier<GalleryState> {
 
   GalleryController({this.ref}) : super(GalleryState());
 
-  Future getImages({required int? page}) async {
+  Future getImages({required int? page, bool? initData}) async {
     state = state.update(isLoading: true);
     List<ImageModel> imageList = await getImagesUsecase.call(page);
     debugPrint("Total image fetched: ${imageList.length}");
-    state = state.update(isLoading: false);
+    state = state.update(isLoading: false, images: imageList, initData: initData);
   }
 }
