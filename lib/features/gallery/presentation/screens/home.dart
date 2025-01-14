@@ -23,7 +23,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((t) {
       ref.read(galleryProvider.notifier).getImages(
-            page: 1,
             initData: true,
           );
     });
@@ -34,8 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     var isEnd = _controller!.offset >= _controller!.position.maxScrollExtent &&
         !_controller!.position.outOfRange;
     if (isEnd) {
-      debugPrint("Hello");
-   
+      ref.read(galleryProvider.notifier).getImages();
     }
   }
 
@@ -47,33 +45,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var galleryState = ref.watch(galleryProvider);
-    List<ImageModel> imageList = galleryState.images ?? [];
+    var galeryProvider = ref.watch(galleryProvider);
+    List<ImageModel> imageList = galeryProvider.images ?? [];
     return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        child: GridView.custom(
-          controller: _controller,
-          gridDelegate: SliverQuiltedGridDelegate(
-            crossAxisCount: 3,
-            mainAxisSpacing: 1,
-            crossAxisSpacing: 1,
-            repeatPattern: QuiltedGridRepeatPattern.same,
-            pattern: [
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(2, 2),
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(2, 3),
-            ],
-          ),
-          childrenDelegate: SliverChildBuilderDelegate(
-            childCount: imageList.length,
-            (context, index) => ImageCard(
-              imageUrl: imageList[index].urls?.raw ?? "",
+      appBar: AppBar(
+        title: Text("Unsplash Gallery"),
+        centerTitle: true,
+        surfaceTintColor: Colors.white,
+      ),
+      body: RefreshIndicator(
+        onRefresh: () =>
+            ref.read(galleryProvider.notifier).getImages(initData: true),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+          child: GridView.custom(
+            controller: _controller,
+            gridDelegate: SliverQuiltedGridDelegate(
+              crossAxisCount: 3,
+              mainAxisSpacing: 1,
+              crossAxisSpacing: 1,
+              repeatPattern: QuiltedGridRepeatPattern.same,
+              pattern: [
+                QuiltedGridTile(1, 1),
+                QuiltedGridTile(1, 1),
+                QuiltedGridTile(1, 1),
+                QuiltedGridTile(2, 2),
+                QuiltedGridTile(1, 1),
+                QuiltedGridTile(1, 1),
+                QuiltedGridTile(2, 3),
+              ],
+            ),
+            childrenDelegate: SliverChildBuilderDelegate(
+              childCount: imageList.length,
+              (context, index) => ImageCard(
+                imageUrl: imageList[index].urls?.raw ?? "",
+                id: imageList[index].id ?? "",
+              ),
             ),
           ),
         ),

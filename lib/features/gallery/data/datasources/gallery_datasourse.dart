@@ -19,11 +19,13 @@ class GalleryDatasourse {
       if (response.statusCode == 200) {
         final List data = response.data;
         debugPrint("${response.data}");
+
+        debugPrint("Current Page: $page");
         return data.map((item) => ImageModel.fromJson(item)).toList();
       } else {
         debugPrint(
             'Failed to load images. Status code: ${response.statusCode}');
-            return [];
+        return [];
       }
     } catch (e) {
       debugPrint("Error in fetching images: $e");
