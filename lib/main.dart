@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_gallery/splash.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
@@ -26,4 +27,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

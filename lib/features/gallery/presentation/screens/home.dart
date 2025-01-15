@@ -26,7 +26,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             initData: true,
           );
     });
-    super.initState();
   }
 
   _scrollListener() async {
@@ -45,46 +44,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var galeryProvider = ref.watch(galleryProvider);
-    List<ImageModel> imageList = galeryProvider.images ?? [];
+    var galleryState = ref.watch(galleryProvider);
+    List<ImageModel> imageList = galleryState.images ?? [];
     return Scaffold(
       appBar: AppBar(
         title: Text("Unsplash Gallery"),
         centerTitle: true,
         surfaceTintColor: Colors.white,
       ),
-      body: RefreshIndicator(
-        onRefresh: () =>
-            ref.read(galleryProvider.notifier).getImages(initData: true),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-          child: GridView.custom(
-            controller: _controller,
-            gridDelegate: SliverQuiltedGridDelegate(
-              crossAxisCount: 3,
-              mainAxisSpacing: 1,
-              crossAxisSpacing: 1,
-              repeatPattern: QuiltedGridRepeatPattern.same,
-              pattern: [
-                QuiltedGridTile(1, 1),
-                QuiltedGridTile(1, 1),
-                QuiltedGridTile(1, 1),
-                QuiltedGridTile(2, 2),
-                QuiltedGridTile(1, 1),
-                QuiltedGridTile(1, 1),
-                QuiltedGridTile(2, 3),
-              ],
-            ),
-            childrenDelegate: SliverChildBuilderDelegate(
-              childCount: imageList.length,
-              (context, index) => ImageCard(
-                imageUrl: imageList[index].urls?.raw ?? "",
-                id: imageList[index].id ?? "",
+      body: galleryState.isLoading == true && galleryState.currentPage == 1
+          ? Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
               ),
+            )
+          : RefreshIndicator(
+              onRefresh: () =>
+                  ref.read(galleryProvider.notifier).getImages(initData: true),
+              child: imageList.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("No images found!"),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          ElevatedButton(
+                            onPressed: () => ref
+                                .read(galleryProvider.notifier)
+                                .getImages(initData: true),
+                            child: Text("Reload"),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                      child: GridView.custom(
+                        controller: _controller,
+                        gridDelegate: SliverQuiltedGridDelegate(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 1,
+                          crossAxisSpacing: 1,
+                          repeatPattern: QuiltedGridRepeatPattern.same,
+                          pattern: [
+                            QuiltedGridTile(1, 1),
+                            QuiltedGridTile(1, 1),
+                            QuiltedGridTile(1, 1),
+                            QuiltedGridTile(2, 2),
+                            QuiltedGridTile(1, 1),
+                            QuiltedGridTile(1, 1),
+                            QuiltedGridTile(2, 3),
+                          ],
+                        ),
+                        childrenDelegate: SliverChildBuilderDelegate(
+                          childCount: imageList.length,
+                          (context, index) => ImageCard(
+                            image: imageList[index],
+                          ),
+                        ),
+                      ),
+                    ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

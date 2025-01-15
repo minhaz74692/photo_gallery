@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:photo_gallery/features/gallery/data/models/image_model.dart';
 import 'package:photo_gallery/features/gallery/presentation/screens/image_view.dart';
 
 class ImageCard extends StatelessWidget {
-  final String imageUrl;
-  final String id;
+  final ImageModel image;
 
   const ImageCard({
     super.key,
-    required this.imageUrl,
-    required this.id,
+    required this.image,
   });
 
   @override
@@ -19,8 +18,7 @@ class ImageCard extends StatelessWidget {
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => ImageView(
-                    imageUrl: imageUrl,
-                    id: id,
+                    image: image,
                   ))),
       child: Card(
         shape: RoundedRectangleBorder(
@@ -29,9 +27,9 @@ class ImageCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         elevation: .1,
         child: Hero(
-          tag: id,
+          tag: image.id ?? "",
           child: CachedNetworkImage(
-            imageUrl: imageUrl,
+            imageUrl: image.urls?.raw ?? "",
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
